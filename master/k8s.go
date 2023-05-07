@@ -57,7 +57,7 @@ func getPodFromContainer(containerID string) string {
 		if pods == nil {
 			log.Printf("Could not get information from K8s")
 		}
-		
+
 		// Do the dirty job.
 		for _, pod := range pods.Items {
 			for _, stat := range pod.Status.ContainerStatuses {

@@ -16,6 +16,7 @@ type eventInfo struct {
 	Command     string `json:"command"`
 	Container   string `json:"container"`
 	IsContainer bool   `json:"isContainer"`
+	PodName     string
 }
 
 // handleEvent is a handler function for new_event endpoint
@@ -28,9 +29,20 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("%v", info)
+	// Check pod name from containers.
 	if k8sEnabled {
-		log.Println(getPodFromContainer(info.Container))
+		info.PodName = getPodFromContainer(info.Container)
+	} else {
+		info.PodName = "N/A"
+	}
+
+	// If verbose mode was turned in, log everything.
+	if verbose {
+		if info.IsContainer {
+			log.Printf("[%s] \"%s\" from container %s (%s)\n", info.Hostname, info.Command, info.Container, info.PodName)
+		} else {
+			log.Printf("[%s] \"%s\" from native %s(%d), user %s(%d)\n", info.Hostname, info.Command, info.PpName, info.Ppid, info.Username, info.Uid)
+		}
 	}
 
 	// Return success response

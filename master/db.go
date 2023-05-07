@@ -32,7 +32,8 @@ func (dh *dbHandler) initDB() error {
 			username TEXT NOT NULL,
 			command TEXT NOT NULL,
 			container TEXT NOT NULL,
-			isContainer INTEGER NOT NULL
+			isContainer INTEGER NOT NULL,
+			podName TEXT NOT NULL
 		);
 	`
 	_, err = dh.db.Exec(createStmt)
@@ -49,11 +50,11 @@ func (dh *dbHandler) insertEvent(event eventInfo) error {
 
 	// Insert event into the database.
 	insertStmt := `
-		INSERT INTO events (datetime, hostname, pid, ppid, ppName, uid, username, command, container, isContainer)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+		INSERT INTO events (datetime, hostname, pid, ppid, ppName, uid, username, command, container, isContainer, podName)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 	`
 	_, err = dh.db.Exec(insertStmt, time.Now().Format("2006-01-02 15:04:05"), event.Hostname, event.Pid, event.Ppid, event.PpName,
-		event.Uid, event.Username, event.Command, event.Container, event.IsContainer)
+		event.Uid, event.Username, event.Command, event.Container, event.IsContainer, event.PodName)
 	if err != nil {
 		return err
 	}
