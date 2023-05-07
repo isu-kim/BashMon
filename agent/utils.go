@@ -89,10 +89,10 @@ func getProcInfo(pid int) string {
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		// Containers contain namespaces based upon system.slice
-		if strings.Contains(line, "system.slice") {
-			parts := strings.Split(line, "/")
-			containerID := parts[len(parts)-1]
+		// Containers contain namespaces based upon .scope name.
+		parts := strings.Split(line, "/")
+		containerID := parts[len(parts)-1]
+		if strings.Contains(containerID, "docker") {
 			containerID = strings.Replace(containerID, ".scope", "", 1)
 			return containerID
 		}
@@ -100,6 +100,10 @@ func getProcInfo(pid int) string {
 
 	// Process was native process.
 	return ""
+}
+
+func retrieveK8sPod(containerID string) {
+
 }
 
 // handleContext handles the given context.

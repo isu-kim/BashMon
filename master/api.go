@@ -20,7 +20,6 @@ type eventInfo struct {
 
 // handleEvent is a handler function for new_event endpoint
 func handleEvent(w http.ResponseWriter, r *http.Request) {
-	log.Println("handleEvent")
 	// Decode JSON payload into eventInfo struct
 	var info eventInfo
 	err := json.NewDecoder(r.Body).Decode(&info)
@@ -30,6 +29,10 @@ func handleEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("%v", info)
+	if k8sEnabled {
+		log.Println(getPodFromContainer(info.Container))
+	}
+
 	// Return success response
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Event received"))
